@@ -219,6 +219,35 @@ type CreatePersonPayload {
   query: Query
 }
 
+# All input for the create \`Widget\` mutation.
+input CreateWidgetInput {
+  # An arbitrary string value with no semantic meaning. Will be included in the
+  # payload verbatim. May be used to track mutations by the client.
+  clientMutationId: String
+
+  # The \`Widget\` to be created by this mutation.
+  widget: WidgetInput!
+}
+
+# The output of our create \`Widget\` mutation.
+type CreateWidgetPayload {
+  # The exact same \`clientMutationId\` that was provided in the mutation input,
+  # unchanged and unused. May be used by a client to track mutations.
+  clientMutationId: String
+
+  # Our root query field type. Allows us to run any query from our mutation payload.
+  query: Query
+
+  # The \`Widget\` that was created by this mutation.
+  widget: Widget
+
+  # An edge for the type. May be used by Relay 1.
+  widgetEdge(
+    # The method to use when ordering \`Widget\`.
+    orderBy: WidgetsOrderBy = PRIMARY_KEY_ASC
+  ): WidgetsEdge
+}
+
 # A location in a connection that can be used for resuming pagination.
 scalar Cursor
 
@@ -315,6 +344,44 @@ type DeletePersonPayload {
 
   # Our root query field type. Allows us to run any query from our mutation payload.
   query: Query
+}
+
+# All input for the \`deleteWidgetByRowId\` mutation.
+input DeleteWidgetByRowIdInput {
+  # An arbitrary string value with no semantic meaning. Will be included in the
+  # payload verbatim. May be used to track mutations by the client.
+  clientMutationId: String
+  rowId: Int!
+}
+
+# All input for the \`deleteWidget\` mutation.
+input DeleteWidgetInput {
+  # An arbitrary string value with no semantic meaning. Will be included in the
+  # payload verbatim. May be used to track mutations by the client.
+  clientMutationId: String
+
+  # The globally unique \`ID\` which will identify a single \`Widget\` to be deleted.
+  id: ID!
+}
+
+# The output of our delete \`Widget\` mutation.
+type DeleteWidgetPayload {
+  # The exact same \`clientMutationId\` that was provided in the mutation input,
+  # unchanged and unused. May be used by a client to track mutations.
+  clientMutationId: String
+  deletedWidgetId: ID
+
+  # Our root query field type. Allows us to run any query from our mutation payload.
+  query: Query
+
+  # The \`Widget\` that was deleted by this mutation.
+  widget: Widget
+
+  # An edge for the type. May be used by Relay 1.
+  widgetEdge(
+    # The method to use when ordering \`Widget\`.
+    orderBy: WidgetsOrderBy = PRIMARY_KEY_ASC
+  ): WidgetsEdge
 }
 
 type EdgeCase {
@@ -487,6 +554,12 @@ type Mutation {
     input: CreatePersonInput!
   ): CreatePersonPayload
 
+  # Creates a single \`Widget\`.
+  createWidget(
+    # The exclusive input argument for this mutation. An object type, make sure to see documentation for this object’s fields.
+    input: CreateWidgetInput!
+  ): CreateWidgetPayload
+
   # Deletes a single \`CompoundKey\` using its globally unique id.
   deleteCompoundKey(
     # The exclusive input argument for this mutation. An object type, make sure to see documentation for this object’s fields.
@@ -516,6 +589,18 @@ type Mutation {
     # The exclusive input argument for this mutation. An object type, make sure to see documentation for this object’s fields.
     input: DeletePersonByRowIdInput!
   ): DeletePersonPayload
+
+  # Deletes a single \`Widget\` using its globally unique id.
+  deleteWidget(
+    # The exclusive input argument for this mutation. An object type, make sure to see documentation for this object’s fields.
+    input: DeleteWidgetInput!
+  ): DeleteWidgetPayload
+
+  # Deletes a single \`Widget\` using a unique key.
+  deleteWidgetByRowId(
+    # The exclusive input argument for this mutation. An object type, make sure to see documentation for this object’s fields.
+    input: DeleteWidgetByRowIdInput!
+  ): DeleteWidgetPayload
   intSetMutation(
     # The exclusive input argument for this mutation. An object type, make sure to see documentation for this object’s fields.
     input: IntSetMutationInput!
@@ -574,6 +659,22 @@ type Mutation {
     # The exclusive input argument for this mutation. An object type, make sure to see documentation for this object’s fields.
     input: UpdatePersonByRowIdInput!
   ): UpdatePersonPayload
+
+  # Updates a single \`Widget\` using its globally unique id and a patch.
+  updateWidget(
+    # The exclusive input argument for this mutation. An object type, make sure to see documentation for this object’s fields.
+    input: UpdateWidgetInput!
+  ): UpdateWidgetPayload
+
+  # Updates a single \`Widget\` using a unique key and a patch.
+  updateWidgetByRowId(
+    # The exclusive input argument for this mutation. An object type, make sure to see documentation for this object’s fields.
+    input: UpdateWidgetByRowIdInput!
+  ): UpdateWidgetPayload
+  widgetProcess(
+    # The exclusive input argument for this mutation. An object type, make sure to see documentation for this object’s fields.
+    input: WidgetProcessInput!
+  ): WidgetProcessPayload!
 }
 
 # All input for the \`noArgsMutation\` mutation.
@@ -868,6 +969,31 @@ type Query implements Node {
     orderBy: PeopleOrderBy = PRIMARY_KEY_ASC
   ): PeopleConnection
 
+  # Reads and enables pagination through a set of \`Widget\`.
+  allWidgets(
+    # Read all values in the set after (below) this cursor.
+    after: Cursor
+
+    # Read all values in the set before (above) this cursor.
+    before: Cursor
+
+    # A condition to be used in determining which values should be returned by the collection.
+    condition: WidgetCondition
+
+    # Only read the first \`n\` values of the set.
+    first: Int
+
+    # Only read the last \`n\` values of the set.
+    last: Int
+
+    # Skip the first \`n\` values from our \`after\` cursor, an alternative to cursor
+    # based pagination. May not be used with \`last\`.
+    offset: Int
+
+    # The method to use when ordering \`Widget\`.
+    orderBy: WidgetsOrderBy = PRIMARY_KEY_ASC
+  ): WidgetsConnection
+
   # Reads a single \`CompoundKey\` using its globally unique \`ID\`.
   compoundKey(
     # The globally unique \`ID\` to be used in selecting a single \`CompoundKey\`.
@@ -959,6 +1085,13 @@ type Query implements Node {
     offset: Int
   ): PeopleConnection!
   typesQuery(a: BigInt!, b: Boolean!, c: String!, d: [Int]!, e: JSON!, f: FloatRangeInput!): Boolean
+
+  # Reads a single \`Widget\` using its globally unique \`ID\`.
+  widget(
+    # The globally unique \`ID\` to be used in selecting a single \`Widget\`.
+    id: ID!
+  ): Widget
+  widgetByRowId(rowId: Int!): Widget
 }
 
 # All input for the \`tableMutation\` mutation.
@@ -1003,6 +1136,9 @@ type TableSetMutationPayload {
   # Our root query field type. Allows us to run any query from our mutation payload.
   query: Query
 }
+
+# The exact time of day, does not include the date. May or may not have a timezone offset.
+scalar Time
 
 # All input for the \`typesMutation\` mutation.
 input TypesMutationInput {
@@ -1134,8 +1270,164 @@ type UpdatePersonPayload {
   query: Query
 }
 
+# All input for the \`updateWidgetByRowId\` mutation.
+input UpdateWidgetByRowIdInput {
+  # An arbitrary string value with no semantic meaning. Will be included in the
+  # payload verbatim. May be used to track mutations by the client.
+  clientMutationId: String
+  rowId: Int!
+
+  # An object where the defined keys will be set on the \`Widget\` being updated.
+  widgetPatch: WidgetPatch!
+}
+
+# All input for the \`updateWidget\` mutation.
+input UpdateWidgetInput {
+  # An arbitrary string value with no semantic meaning. Will be included in the
+  # payload verbatim. May be used to track mutations by the client.
+  clientMutationId: String
+
+  # The globally unique \`ID\` which will identify a single \`Widget\` to be updated.
+  id: ID!
+
+  # An object where the defined keys will be set on the \`Widget\` being updated.
+  widgetPatch: WidgetPatch!
+}
+
+# The output of our update \`Widget\` mutation.
+type UpdateWidgetPayload {
+  # The exact same \`clientMutationId\` that was provided in the mutation input,
+  # unchanged and unused. May be used by a client to track mutations.
+  clientMutationId: String
+
+  # Our root query field type. Allows us to run any query from our mutation payload.
+  query: Query
+
+  # The \`Widget\` that was updated by this mutation.
+  widget: Widget
+
+  # An edge for the type. May be used by Relay 1.
+  widgetEdge(
+    # The method to use when ordering \`Widget\`.
+    orderBy: WidgetsOrderBy = PRIMARY_KEY_ASC
+  ): WidgetsEdge
+}
+
 # A universally unique identifier as defined by [RFC 4122](https://tools.ietf.org/html/rfc4122).
 scalar UUID
+
+type Widget implements Node {
+  # A globally unique identifier. Can be used in various places throughout the system to identify this single value.
+  id: ID!
+  logDate: Time!
+  rowId: Int!
+  widget2: Float!
+  widget3: Float!
+  widget4: Float!
+  widget5: Float!
+}
+
+# A condition to be used against \`Widget\` object types. All fields are tested for equality and combined with a logical ‘and.’
+input WidgetCondition {
+  # Checks for equality with the object’s \`logDate\` field.
+  logDate: Time
+
+  # Checks for equality with the object’s \`rowId\` field.
+  rowId: Int
+
+  # Checks for equality with the object’s \`widget2\` field.
+  widget2: Float
+
+  # Checks for equality with the object’s \`widget3\` field.
+  widget3: Float
+
+  # Checks for equality with the object’s \`widget4\` field.
+  widget4: Float
+
+  # Checks for equality with the object’s \`widget5\` field.
+  widget5: Float
+}
+
+# An input for mutations affecting \`Widget\`
+input WidgetInput {
+  logDate: Time!
+  rowId: Int
+  widget2: Float!
+  widget3: Float!
+  widget4: Float!
+  widget5: Float!
+}
+
+# Represents an update to a \`Widget\`. Fields that are set will be updated.
+input WidgetPatch {
+  logDate: Time
+  rowId: Int
+  widget2: Float
+  widget3: Float
+  widget4: Float
+  widget5: Float
+}
+
+# All input for the \`widgetProcess\` mutation.
+input WidgetProcessInput {
+  # An arbitrary string value with no semantic meaning. Will be included in the
+  # payload verbatim. May be used to track mutations by the client.
+  clientMutationId: String
+  widgets: [[Float]!]!
+}
+
+# The output of our \`widgetProcess\` mutation.
+type WidgetProcessPayload {
+  # The exact same \`clientMutationId\` that was provided in the mutation input,
+  # unchanged and unused. May be used by a client to track mutations.
+  clientMutationId: String
+
+  # Our root query field type. Allows us to run any query from our mutation payload.
+  query: Query
+}
+
+# A connection to a list of \`Widget\` values.
+type WidgetsConnection {
+  # A list of edges which contains the \`Widget\` and cursor to aid in pagination.
+  edges: [WidgetsEdge!]!
+
+  # A list of \`Widget\` objects.
+  nodes: [Widget]!
+
+  # Information to aid in pagination.
+  pageInfo: PageInfo!
+
+  # The count of *all* \`Widget\` you could get from the connection.
+  totalCount: Int
+}
+
+# A \`Widget\` edge in the connection.
+type WidgetsEdge {
+  # A cursor for use in pagination.
+  cursor: Cursor
+
+  # The \`Widget\` at the end of the edge.
+  node: Widget!
+}
+
+# Methods to use when ordering \`Widget\`.
+enum WidgetsOrderBy {
+  ID_ASC
+  ID_DESC
+  LOG_DATE_ASC
+  LOG_DATE_DESC
+  NATURAL
+  PRIMARY_KEY_ASC
+  PRIMARY_KEY_DESC
+  WIDGET2_ASC
+  WIDGET2_DESC
+  WIDGET3_ASC
+  WIDGET3_DESC
+  WIDGET4_ASC
+  WIDGET4_DESC
+  WIDGET5_ASC
+  WIDGET5_DESC
+}
 "
 `;
 
@@ -2851,6 +3143,35 @@ type CreateUpdatableViewPayload {
   ): UpdatableViewsEdge
 }
 
+# All input for the create \`Widget\` mutation.
+input CreateWidgetInput {
+  # An arbitrary string value with no semantic meaning. Will be included in the
+  # payload verbatim. May be used to track mutations by the client.
+  clientMutationId: String
+
+  # The \`Widget\` to be created by this mutation.
+  widget: WidgetInput!
+}
+
+# The output of our create \`Widget\` mutation.
+type CreateWidgetPayload {
+  # The exact same \`clientMutationId\` that was provided in the mutation input,
+  # unchanged and unused. May be used by a client to track mutations.
+  clientMutationId: String
+
+  # Our root query field type. Allows us to run any query from our mutation payload.
+  query: Query
+
+  # The \`Widget\` that was created by this mutation.
+  widget: Widget
+
+  # An edge for the type. May be used by Relay 1.
+  widgetEdge(
+    # The method to use when ordering \`Widget\`.
+    orderBy: WidgetsOrderBy = PRIMARY_KEY_ASC
+  ): WidgetsEdge
+}
+
 # A location in a connection that can be used for resuming pagination.
 scalar Cursor
 
@@ -3141,6 +3462,44 @@ type DeleteTypePayload {
     # The method to use when ordering \`Type\`.
     orderBy: TypesOrderBy = PRIMARY_KEY_ASC
   ): TypesEdge
+}
+
+# All input for the \`deleteWidgetById\` mutation.
+input DeleteWidgetByIdInput {
+  # An arbitrary string value with no semantic meaning. Will be included in the
+  # payload verbatim. May be used to track mutations by the client.
+  clientMutationId: String
+  id: Int!
+}
+
+# All input for the \`deleteWidget\` mutation.
+input DeleteWidgetInput {
+  # An arbitrary string value with no semantic meaning. Will be included in the
+  # payload verbatim. May be used to track mutations by the client.
+  clientMutationId: String
+
+  # The globally unique \`ID\` which will identify a single \`Widget\` to be deleted.
+  nodeId: ID!
+}
+
+# The output of our delete \`Widget\` mutation.
+type DeleteWidgetPayload {
+  # The exact same \`clientMutationId\` that was provided in the mutation input,
+  # unchanged and unused. May be used by a client to track mutations.
+  clientMutationId: String
+  deletedWidgetId: ID
+
+  # Our root query field type. Allows us to run any query from our mutation payload.
+  query: Query
+
+  # The \`Widget\` that was deleted by this mutation.
+  widget: Widget
+
+  # An edge for the type. May be used by Relay 1.
+  widgetEdge(
+    # The method to use when ordering \`Widget\`.
+    orderBy: WidgetsOrderBy = PRIMARY_KEY_ASC
+  ): WidgetsEdge
 }
 
 type EdgeCase {
@@ -3641,6 +4000,12 @@ type Mutation {
     input: CreateUpdatableViewInput!
   ): CreateUpdatableViewPayload
 
+  # Creates a single \`Widget\`.
+  createWidget(
+    # The exclusive input argument for this mutation. An object type, make sure to see documentation for this object’s fields.
+    input: CreateWidgetInput!
+  ): CreateWidgetPayload
+
   # Deletes a single \`CompoundKey\` using its globally unique id.
   deleteCompoundKey(
     # The exclusive input argument for this mutation. An object type, make sure to see documentation for this object’s fields.
@@ -3718,6 +4083,18 @@ type Mutation {
     # The exclusive input argument for this mutation. An object type, make sure to see documentation for this object’s fields.
     input: DeleteTypeByIdInput!
   ): DeleteTypePayload
+
+  # Deletes a single \`Widget\` using its globally unique id.
+  deleteWidget(
+    # The exclusive input argument for this mutation. An object type, make sure to see documentation for this object’s fields.
+    input: DeleteWidgetInput!
+  ): DeleteWidgetPayload
+
+  # Deletes a single \`Widget\` using a unique key.
+  deleteWidgetById(
+    # The exclusive input argument for this mutation. An object type, make sure to see documentation for this object’s fields.
+    input: DeleteWidgetByIdInput!
+  ): DeleteWidgetPayload
   guidFn(
     # The exclusive input argument for this mutation. An object type, make sure to see documentation for this object’s fields.
     input: GuidFnInput!
@@ -3852,6 +4229,22 @@ type Mutation {
     # The exclusive input argument for this mutation. An object type, make sure to see documentation for this object’s fields.
     input: UpdateTypeByIdInput!
   ): UpdateTypePayload
+
+  # Updates a single \`Widget\` using its globally unique id and a patch.
+  updateWidget(
+    # The exclusive input argument for this mutation. An object type, make sure to see documentation for this object’s fields.
+    input: UpdateWidgetInput!
+  ): UpdateWidgetPayload
+
+  # Updates a single \`Widget\` using a unique key and a patch.
+  updateWidgetById(
+    # The exclusive input argument for this mutation. An object type, make sure to see documentation for this object’s fields.
+    input: UpdateWidgetByIdInput!
+  ): UpdateWidgetPayload
+  widgetProcess(
+    # The exclusive input argument for this mutation. An object type, make sure to see documentation for this object’s fields.
+    input: WidgetProcessInput!
+  ): WidgetProcessPayload!
 }
 
 type NestedCompoundType {
@@ -4539,6 +4932,31 @@ type Query implements Node {
     orderBy: UpdatableViewsOrderBy = NATURAL
   ): UpdatableViewsConnection
 
+  # Reads and enables pagination through a set of \`Widget\`.
+  allWidgets(
+    # Read all values in the set after (below) this cursor.
+    after: Cursor
+
+    # Read all values in the set before (above) this cursor.
+    before: Cursor
+
+    # A condition to be used in determining which values should be returned by the collection.
+    condition: WidgetCondition
+
+    # Only read the first \`n\` values of the set.
+    first: Int
+
+    # Only read the last \`n\` values of the set.
+    last: Int
+
+    # Skip the first \`n\` values from our \`after\` cursor, an alternative to cursor
+    # based pagination. May not be used with \`last\`.
+    offset: Int
+
+    # The method to use when ordering \`Widget\`.
+    orderBy: WidgetsOrderBy = PRIMARY_KEY_ASC
+  ): WidgetsConnection
+
   # Reads a single \`CompoundKey\` using its globally unique \`ID\`.
   compoundKey(
     # The globally unique \`ID\` to be used in selecting a single \`CompoundKey\`.
@@ -4721,6 +5139,13 @@ type Query implements Node {
   ): Type
   typeById(id: Int!): Type
   typesQuery(a: BigInt!, b: Boolean!, c: String!, d: [Int]!, e: JSON!, f: FloatRangeInput!): Boolean
+
+  # Reads a single \`Widget\` using its globally unique \`ID\`.
+  widget(
+    # The globally unique \`ID\` to be used in selecting a single \`Widget\`.
+    nodeId: ID!
+  ): Widget
+  widgetById(id: Int!): Widget
 }
 
 # All input for the \`returnVoidMutation\` mutation.
@@ -5690,8 +6115,165 @@ type UpdateTypePayload {
   ): TypesEdge
 }
 
+# All input for the \`updateWidgetById\` mutation.
+input UpdateWidgetByIdInput {
+  # An arbitrary string value with no semantic meaning. Will be included in the
+  # payload verbatim. May be used to track mutations by the client.
+  clientMutationId: String
+  id: Int!
+
+  # An object where the defined keys will be set on the \`Widget\` being updated.
+  widgetPatch: WidgetPatch!
+}
+
+# All input for the \`updateWidget\` mutation.
+input UpdateWidgetInput {
+  # An arbitrary string value with no semantic meaning. Will be included in the
+  # payload verbatim. May be used to track mutations by the client.
+  clientMutationId: String
+
+  # The globally unique \`ID\` which will identify a single \`Widget\` to be updated.
+  nodeId: ID!
+
+  # An object where the defined keys will be set on the \`Widget\` being updated.
+  widgetPatch: WidgetPatch!
+}
+
+# The output of our update \`Widget\` mutation.
+type UpdateWidgetPayload {
+  # The exact same \`clientMutationId\` that was provided in the mutation input,
+  # unchanged and unused. May be used by a client to track mutations.
+  clientMutationId: String
+
+  # Our root query field type. Allows us to run any query from our mutation payload.
+  query: Query
+
+  # The \`Widget\` that was updated by this mutation.
+  widget: Widget
+
+  # An edge for the type. May be used by Relay 1.
+  widgetEdge(
+    # The method to use when ordering \`Widget\`.
+    orderBy: WidgetsOrderBy = PRIMARY_KEY_ASC
+  ): WidgetsEdge
+}
+
 # A universally unique identifier as defined by [RFC 4122](https://tools.ietf.org/html/rfc4122).
 scalar UUID
+
+type Widget implements Node {
+  id: Int!
+  logDate: Time!
+
+  # A globally unique identifier. Can be used in various places throughout the system to identify this single value.
+  nodeId: ID!
+  widget2: Float!
+  widget3: Float!
+  widget4: Float!
+  widget5: Float!
+}
+
+# A condition to be used against \`Widget\` object types. All fields are tested for equality and combined with a logical ‘and.’
+input WidgetCondition {
+  # Checks for equality with the object’s \`id\` field.
+  id: Int
+
+  # Checks for equality with the object’s \`logDate\` field.
+  logDate: Time
+
+  # Checks for equality with the object’s \`widget2\` field.
+  widget2: Float
+
+  # Checks for equality with the object’s \`widget3\` field.
+  widget3: Float
+
+  # Checks for equality with the object’s \`widget4\` field.
+  widget4: Float
+
+  # Checks for equality with the object’s \`widget5\` field.
+  widget5: Float
+}
+
+# An input for mutations affecting \`Widget\`
+input WidgetInput {
+  id: Int
+  logDate: Time!
+  widget2: Float!
+  widget3: Float!
+  widget4: Float!
+  widget5: Float!
+}
+
+# Represents an update to a \`Widget\`. Fields that are set will be updated.
+input WidgetPatch {
+  id: Int
+  logDate: Time
+  widget2: Float
+  widget3: Float
+  widget4: Float
+  widget5: Float
+}
+
+# All input for the \`widgetProcess\` mutation.
+input WidgetProcessInput {
+  # An arbitrary string value with no semantic meaning. Will be included in the
+  # payload verbatim. May be used to track mutations by the client.
+  clientMutationId: String
+  widgets: [[Float]!]!
+}
+
+# The output of our \`widgetProcess\` mutation.
+type WidgetProcessPayload {
+  # The exact same \`clientMutationId\` that was provided in the mutation input,
+  # unchanged and unused. May be used by a client to track mutations.
+  clientMutationId: String
+
+  # Our root query field type. Allows us to run any query from our mutation payload.
+  query: Query
+}
+
+# A connection to a list of \`Widget\` values.
+type WidgetsConnection {
+  # A list of edges which contains the \`Widget\` and cursor to aid in pagination.
+  edges: [WidgetsEdge!]!
+
+  # A list of \`Widget\` objects.
+  nodes: [Widget]!
+
+  # Information to aid in pagination.
+  pageInfo: PageInfo!
+
+  # The count of *all* \`Widget\` you could get from the connection.
+  totalCount: Int
+}
+
+# A \`Widget\` edge in the connection.
+type WidgetsEdge {
+  # A cursor for use in pagination.
+  cursor: Cursor
+
+  # The \`Widget\` at the end of the edge.
+  node: Widget!
+}
+
+# Methods to use when ordering \`Widget\`.
+enum WidgetsOrderBy {
+  ID_ASC
+  ID_DESC
+  LOG_DATE_ASC
+  LOG_DATE_DESC
+  NATURAL
+  PRIMARY_KEY_ASC
+  PRIMARY_KEY_DESC
+  WIDGET2_ASC
+  WIDGET2_DESC
+  WIDGET3_ASC
+  WIDGET3_DESC
+  WIDGET4_ASC
+  WIDGET4_DESC
+  WIDGET5_ASC
+  WIDGET5_DESC
+}
 "
 `;
 
@@ -5987,6 +6569,10 @@ type Mutation {
     # The exclusive input argument for this mutation. An object type, make sure to see documentation for this object’s fields.
     input: TypesMutationInput!
   ): TypesMutationPayload!
+  widgetProcess(
+    # The exclusive input argument for this mutation. An object type, make sure to see documentation for this object’s fields.
+    input: WidgetProcessInput!
+  ): WidgetProcessPayload!
 }
 
 # All input for the \`noArgsMutation\` mutation.
@@ -6259,6 +6845,31 @@ type Query implements Node {
     orderBy: PeopleOrderBy = PRIMARY_KEY_ASC
   ): PeopleConnection
 
+  # Reads and enables pagination through a set of \`Widget\`.
+  allWidgets(
+    # Read all values in the set after (below) this cursor.
+    after: Cursor
+
+    # Read all values in the set before (above) this cursor.
+    before: Cursor
+
+    # A condition to be used in determining which values should be returned by the collection.
+    condition: WidgetCondition
+
+    # Only read the first \`n\` values of the set.
+    first: Int
+
+    # Only read the last \`n\` values of the set.
+    last: Int
+
+    # Skip the first \`n\` values from our \`after\` cursor, an alternative to cursor
+    # based pagination. May not be used with \`last\`.
+    offset: Int
+
+    # The method to use when ordering \`Widget\`.
+    orderBy: WidgetsOrderBy = PRIMARY_KEY_ASC
+  ): WidgetsConnection
+
   # Reads a single \`CompoundKey\` using its globally unique \`ID\`.
   compoundKey(
     # The globally unique \`ID\` to be used in selecting a single \`CompoundKey\`.
@@ -6350,6 +6961,13 @@ type Query implements Node {
     offset: Int
   ): PeopleConnection!
   typesQuery(a: BigInt!, b: Boolean!, c: String!, d: [Int]!, e: JSON!, f: FloatRangeInput!): Boolean
+
+  # Reads a single \`Widget\` using its globally unique \`ID\`.
+  widget(
+    # The globally unique \`ID\` to be used in selecting a single \`Widget\`.
+    nodeId: ID!
+  ): Widget
+  widgetById(id: Int!): Widget
 }
 
 # All input for the \`tableMutation\` mutation.
@@ -6395,6 +7013,9 @@ type TableSetMutationPayload {
   query: Query
 }
 
+# The exact time of day, does not include the date. May or may not have a timezone offset.
+scalar Time
+
 # All input for the \`typesMutation\` mutation.
 input TypesMutationInput {
   a: BigInt!
@@ -6423,5 +7044,99 @@ type TypesMutationPayload {
 
 # A universally unique identifier as defined by [RFC 4122](https://tools.ietf.org/html/rfc4122).
 scalar UUID
+
+type Widget implements Node {
+  id: Int!
+  logDate: Time!
+
+  # A globally unique identifier. Can be used in various places throughout the system to identify this single value.
+  nodeId: ID!
+  widget2: Float!
+  widget3: Float!
+  widget4: Float!
+  widget5: Float!
+}
+
+# A condition to be used against \`Widget\` object types. All fields are tested for equality and combined with a logical ‘and.’
+input WidgetCondition {
+  # Checks for equality with the object’s \`id\` field.
+  id: Int
+
+  # Checks for equality with the object’s \`logDate\` field.
+  logDate: Time
+
+  # Checks for equality with the object’s \`widget2\` field.
+  widget2: Float
+
+  # Checks for equality with the object’s \`widget3\` field.
+  widget3: Float
+
+  # Checks for equality with the object’s \`widget4\` field.
+  widget4: Float
+
+  # Checks for equality with the object’s \`widget5\` field.
+  widget5: Float
+}
+
+# All input for the \`widgetProcess\` mutation.
+input WidgetProcessInput {
+  # An arbitrary string value with no semantic meaning. Will be included in the
+  # payload verbatim. May be used to track mutations by the client.
+  clientMutationId: String
+  widgets: [[Float]!]!
+}
+
+# The output of our \`widgetProcess\` mutation.
+type WidgetProcessPayload {
+  # The exact same \`clientMutationId\` that was provided in the mutation input,
+  # unchanged and unused. May be used by a client to track mutations.
+  clientMutationId: String
+
+  # Our root query field type. Allows us to run any query from our mutation payload.
+  query: Query
+}
+
+# A connection to a list of \`Widget\` values.
+type WidgetsConnection {
+  # A list of edges which contains the \`Widget\` and cursor to aid in pagination.
+  edges: [WidgetsEdge!]!
+
+  # A list of \`Widget\` objects.
+  nodes: [Widget]!
+
+  # Information to aid in pagination.
+  pageInfo: PageInfo!
+
+  # The count of *all* \`Widget\` you could get from the connection.
+  totalCount: Int
+}
+
+# A \`Widget\` edge in the connection.
+type WidgetsEdge {
+  # A cursor for use in pagination.
+  cursor: Cursor
+
+  # The \`Widget\` at the end of the edge.
+  node: Widget!
+}
+
+# Methods to use when ordering \`Widget\`.
+enum WidgetsOrderBy {
+  ID_ASC
+  ID_DESC
+  LOG_DATE_ASC
+  LOG_DATE_DESC
+  NATURAL
+  PRIMARY_KEY_ASC
+  PRIMARY_KEY_DESC
+  WIDGET2_ASC
+  WIDGET2_DESC
+  WIDGET3_ASC
+  WIDGET3_DESC
+  WIDGET4_ASC
+  WIDGET4_DESC
+  WIDGET5_ASC
+  WIDGET5_DESC
+}
 "
 `;

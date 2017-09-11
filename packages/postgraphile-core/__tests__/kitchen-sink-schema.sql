@@ -109,6 +109,30 @@ alter table c.edge_case drop column drop_me;
 
 create function c.edge_case_computed(edge_case c.edge_case) returns text as $$ select 'hello world'::text $$ language sql stable;
 
+-- Ref: https://github.com/postgraphql/postgraphql/issues/580
+create table c.widget
+(
+  id serial not null primary key,
+  log_date time with time zone not null,
+  widget2 real not null,
+  widget3 real not null,
+  widget4 real not null,
+  widget5 real not null
+);
+
+create or replace function c.widget_process(
+  widgets decimal(14,3)[][]
+) returns void as $$
+declare
+  widget decimal(14,3)[];
+begin
+  foreach widget slice 1 in array widgets loop
+    insert into public.widget(log_date, widget2, widget3, widget4, widget5)
+    select to_timestamp(widget[1]), widget[2], widget[3], widget[4], widget[5];
+  end loop;
+end;
+$$ language plpgsql strict security definer;
+
 create domain a.an_int as integer;
 create domain b.another_int as a.an_int;
 
